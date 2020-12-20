@@ -1,4 +1,4 @@
-package com.crm.qa.testcases;
+package com.jiakalita.qa.tests;
 
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
