@@ -31,7 +31,6 @@ public class TabAndBookmarkManagerExtensionTest {
 	@BeforeMethod
 	public void setUp() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "/Users/parijatkalita/Downloads/chromedriver");
-		// driver = new ChromeDriver();
 
 		ChromeOptions options = new ChromeOptions();
 		options.addExtensions(new File("/Users/parijatkalita/Downloads/aicaflgmmblfaneodjfhkilgplnpjmig.crx"));
@@ -43,7 +42,6 @@ public class TabAndBookmarkManagerExtensionTest {
 		System.out.println("Opening extension");
 		driver.get("chrome-extension://aicaflgmmblfaneodjfhkilgplnpjmig/board-detail.html");
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-		// js = (JavascriptExecutor) driver;
 		driver.findElement(By.cssSelector("#choose_bn_skip")).click();
 		driver.findElement(By.cssSelector(".introjs-button.introjs-skipbutton")).click();
 	}
@@ -57,7 +55,6 @@ public class TabAndBookmarkManagerExtensionTest {
 	private void navigateToExtension() {
 		((JavascriptExecutor) driver).executeScript(
 				"window.open('chrome-extension://aicaflgmmblfaneodjfhkilgplnpjmig/board-detail.html', '_blank');");
-		// new WebDriverWait(driver, 20).until
 		((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete");
 	}
 
