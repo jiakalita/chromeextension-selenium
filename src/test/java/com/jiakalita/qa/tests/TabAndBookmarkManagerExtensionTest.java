@@ -21,9 +21,11 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.testng.log4testng.Logger;
 
 public class TabAndBookmarkManagerExtensionTest {
-
+	
+	private static final Logger logger = Logger.getLogger(TabAndBookmarkManagerExtensionTest.class);
 	WebDriver driver;
 
 	@BeforeMethod
@@ -128,6 +130,7 @@ public class TabAndBookmarkManagerExtensionTest {
 	 */
 	@Test
 	public void addBookmark() throws InterruptedException, IOException {
+		logger.info("Starting test to add new bookmark, search and see it is visible");
 		String title = driver.getTitle();
 		System.out.println("title is: " + title);
 		String bookmarkURL = "https://www.google.com";
@@ -145,6 +148,7 @@ public class TabAndBookmarkManagerExtensionTest {
 	 */
 	@Test
 	public void addTabsAndSwitchToFourthResult() throws InterruptedException, IOException {
+		logger.info("Starting test to open tabs and switch to fourth result");
 		String[] urls = { "https://www.javatpoint.com/selenium-features", "https://www.github.com",
 				"https://www.webkul.com/", "https://www.google.com" };
 		openTabsWithGivenUrls(urls);
@@ -157,6 +161,7 @@ public class TabAndBookmarkManagerExtensionTest {
 	 */
 	@Test
 	public void deleteNewlyAddedBookmark() throws InterruptedException, IOException {
+		logger.info("Starting test to delete newly added bookmark");
 		String newBookmarkUrl = "https://www.github.com";
 		addNewBookmark("Test bookmark2", newBookmarkUrl);
 		WebElement deleteIcon = driver.findElement(
@@ -172,6 +177,7 @@ public class TabAndBookmarkManagerExtensionTest {
 	 */
 	@Test
 	public void createNewBoardAndDelete() throws InterruptedException, IOException {
+		logger.info("Starting test to create new board, verify and delete it");
 		createNewBoard();
 		assertTrue(isNewUnnamedBoardCreated());
 		openSettingsAndDeleteBoard();
