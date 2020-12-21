@@ -14,6 +14,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -80,8 +81,6 @@ public class TabAndBookmarkManagerExtensionTest {
 		new WebDriverWait(driver, 20).until(ExpectedConditions.visibilityOf(openedTabsElement));
 		new WebDriverWait(driver, 20).until(ExpectedConditions.elementToBeClickable(openedTabsElement));
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", openedTabsElement);
-		// new
-		// Actions(driver).moveToElement(openedTabsElement).click().build().perform();
 		WebElement requiredTab = driver
 				.findElements(By.cssSelector("li.list-group-item.pointer.entry-block.tabs a[href]")).get(tabNo);
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", requiredTab);
@@ -91,9 +90,6 @@ public class TabAndBookmarkManagerExtensionTest {
 
 		for (int i = 0; i < urls.length; ++i) {
 			((JavascriptExecutor) driver).executeScript("window.open('" + urls[i] + "', '_blank');");
-			// new WebDriverWait(driver, 20).until(
-			// driver -> ((JavascriptExecutor) driver).executeScript("return
-			// document.readyState").equals("complete"));
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
@@ -102,11 +98,34 @@ public class TabAndBookmarkManagerExtensionTest {
 		}
 
 	}
-	/*
-	 * Open bunch of tabs with different urls and invoke saka and switch to the
-	 * fourth result.
-	 */
 
+	private void openSettingsAndDeleteBoard() {
+		WebElement settingDropdown = driver.findElement(By.cssSelector("#setting-dropdown"));
+		((JavascriptExecutor) driver).executeScript("arguments[0].click();", settingDropdown);
+		driver.findElement(By.cssSelector("#delete_board")).click();
+	}
+
+	private void createNewBoard() {
+		WebElement boardDropdown = driver.findElement(By.cssSelector("#navbarDropdown"));
+		((JavascriptExecutor) driver).executeScript("arguments[0].click();", boardDropdown);
+		driver.findElement(By.xpath("//div[@id='board_menu']//div[contains(@class,'create-board-btn')]")).click();
+	}
+
+	private boolean isNewUnnamedBoardCreated() {
+		WebElement boardNameContainer = driver.findElement((By.cssSelector("#selected_board_name")));
+		new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOf(boardNameContainer));
+		return boardNameContainer.getAttribute("value").contains("Unnamed Board");
+	}
+
+	private boolean isPrimaryBoardDisplayed() {
+		WebElement boardNameContainer = driver.findElement((By.cssSelector("#selected_board_name")));
+		new WebDriverWait(driver, 10).until(ExpectedConditions.visibilityOf(boardNameContainer));
+		return boardNameContainer.getAttribute("value").contains("Primary Board");
+	}
+
+	/*
+	 * Add a new bookmark, search and see if the bookmark is visible
+	 */
 	@Test
 	public void addBookmark() throws InterruptedException, IOException {
 		String title = driver.getTitle();
@@ -120,6 +139,10 @@ public class TabAndBookmarkManagerExtensionTest {
 				.isDisplayed());
 	}
 
+	/*
+	 * Open bunch of tabs with different urls and invoke extension and switch to the
+	 * fourth result.
+	 */
 	@Test
 	public void addTabsAndSwitchToFourthResult() throws InterruptedException, IOException {
 		String[] urls = { "https://www.javatpoint.com/selenium-features", "https://www.github.com",
@@ -129,25 +152,30 @@ public class TabAndBookmarkManagerExtensionTest {
 		openTabAtGivenIndex(4);
 	}
 
+	/*
+	 * add a new bookmark, Delete it and verify that the bookmark is gone.
+	 */
 	@Test
 	public void deleteNewlyAddedBookmark() throws InterruptedException, IOException {
 		String newBookmarkUrl = "https://www.github.com";
 		addNewBookmark("Test bookmark2", newBookmarkUrl);
 		WebElement deleteIcon = driver.findElement(
-				By.xpath(String.format("//a[@href='%s']/ancestor::li//img[@alt='delete btn']", newBookmarkUrl)));
-		// new Actions(driver).moveToElement(deleteIcon).click().build().perform();
+				By.xpath(String.format("//a[@href='%s']/ancestor::li//img[@alt='delete btn']", newBookmarkUrl))); // new
+		new Actions(driver).moveToElement(deleteIcon).click().build().perform();
 		((JavascriptExecutor) driver).executeScript("arguments[0].click();", deleteIcon);
 		assertFalse(isBookmarkPresent(newBookmarkUrl));
 	}
-	/*
-	 * public static void takeScreenshot(String fileName) throws IOException { //
-	 * Take screenshot and store as a file format File src = ((TakesScreenshot)
-	 * driver).getScreenshotAs(OutputType.FILE); // now copy the screenshot to
-	 * desired location using copyFile //method FileUtils.copyFile(src, new File(
-	 * "/Users/NaveenKhunteta/Documents/MyPOMFramework/PageObjectModel/screenshots/"
-	 * + fileName + ".png"));
-	 * 
-	 * }
-	 */
 
+	/*
+	 * Create a new board, verify this board is loaded. Now, delete this board and
+	 * verify that default board is loaded
+	 */
+	@Test
+	public void createNewBoardAndDelete() throws InterruptedException, IOException {
+		createNewBoard();
+		assertTrue(isNewUnnamedBoardCreated());
+		openSettingsAndDeleteBoard();
+		driver.switchTo().alert().accept();
+		assertTrue(isPrimaryBoardDisplayed());
+	}
 }
